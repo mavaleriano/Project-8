@@ -6,7 +6,6 @@ var Book = require("../models").Book;
 function asyncHandler(cb){
   return async(req, res, next) => {
     try {
-      console.log('Im here');
       await cb(req, res, next)
     } catch(error){
       res.status(500).send(error);
@@ -21,18 +20,20 @@ router.get('/', asyncHandler(async (req, res) => {
 }));
 
 /* Shows the create new book form */
-router.get('/books/new', asyncHandler(async (req, res) => {}));
+router.get('/new', asyncHandler(async (req, res) => {
+  res.render("books/new-book", { book: {}, title: "New Book" });
+}));
 
 /* Posts a new book to the database */
-router.post('/books/new', asyncHandler(async (req, res) => {}));
+router.post('/new', asyncHandler(async (req, res) => {}));
 
 /* Shows book detail form */
-router.get('/books/:id', asyncHandler(async (req, res) => {}));
+router.get('/:id', asyncHandler(async (req, res) => {}));
 
 /* Updates book info in the database */
-router.post('/books/:id', asyncHandler(async (req, res) => {}));
+router.post('/:id', asyncHandler(async (req, res) => {}));
 
 /* Deletes a book. Careful, this can't be undone: Add new test to to test delete */
-router.post('/books/:id/delete', asyncHandler(async (req, res) => {}));
+router.post('/:id/delete', asyncHandler(async (req, res) => {}));
 
 module.exports = router;

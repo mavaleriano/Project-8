@@ -6,6 +6,7 @@ module.exports = (sequelize) => {
   Book.init({
     title: {
       type: Sequelize.STRING,
+      allowNull: false,
       validate: {
         notEmpty: {
           msg: '"Title" is required'
@@ -14,6 +15,7 @@ module.exports = (sequelize) => {
     },
     author: {
       type: Sequelize.STRING,
+      allowNull: false,
       validate: {
         notEmpty: {
           msg: '"Author" is required'

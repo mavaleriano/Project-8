@@ -1,0 +1,9 @@
+extends layout
+
+block content
+  - var msg = message
+  h1 Page Was #{msg}
+  h2= error.status
+  - var n = Math.floor((Math.random() * 7) + 1)
+    img.image(src=`images/404images/404img${n}.png`)
+  pre #{error.stack}

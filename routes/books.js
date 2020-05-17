@@ -25,15 +25,83 @@ router.get('/new', asyncHandler(async (req, res) => {
 }));
 
 /* Posts a new book to the database */
-router.post('/new', asyncHandler(async (req, res) => {}));
+// Used 'Using Sequelize ORM with Express' teamhouse project to help with much of this
+router.post('/', asyncHandler(async (req, res) => {
+  let book;
+  try {
+    book = await Book.create(req.body);
+    console.log(book);
+    res.redirect("/books/" + book.id);
+  }
+  catch(error){
+    if (error.name === "SequelizeValidationError")
+    {
+      console.log(error.name);
+      article = await Book.build(req.body);
+      res.render("books/new-book", { article, errors: error.errors, title: "New Book"})
+    }
+    else
+    {
+      throw error;  //error caught in asyncHandler's catch block
+    }
+  }
+}));
 
 /* Shows book detail form */
-router.get('/:id', asyncHandler(async (req, res) => {}));
+router.get('/:id', asyncHandler(async (req, res) => {
+  const book = await Book.findByPk(req.params.id);
+  if (book)
+  {
+    res.render("books/update-book", {book, title: book.title} );
+  }
+  else
+  {
+    res.sendStatus(404);
+  }
+}));
 
 /* Updates book info in the database */
-router.post('/:id', asyncHandler(async (req, res) => {}));
+router.post('/:id/edit', asyncHandler(async (req, res) => {
+  let book;
+  try {
+    book = await Book.findByPk(req.params.id);
+    if (book)
+    {
+      await book.update(req.body);
+      res.redirect("/books/" + book.id);
+    }
+    else
+    {
+      res.sendStatus(404);
+    }
+  }
+  catch
+  {
+    if (error.name === "SequelizeValidationError") 
+    {
+      book = await Book.build(req.body);
+      book.id = req.params.id; // Make sure correct article gets updated
+      res.render("books/update-book", {book, errors: error.errors, title: "Edit Book"})
+    }
+    else
+    {
+      throw error;
+    }
+  }
+}));
 
 /* Deletes a book. Careful, this can't be undone: Add new test to to test delete */
-router.post('/:id/delete', asyncHandler(async (req, res) => {}));
+router.post('/:id/delete', asyncHandler(async (req, res) => {
+  const book = await Book.findByPk(req.params.id);
+  if (book) 
+  {
+    await book.destroy();
+    res.redirect("/books");
+  }
+  else
+  {
+    res.sendStatus(404);
+  }
+}));
 
 module.exports = router;

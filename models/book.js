@@ -30,5 +30,16 @@ module.exports = (sequelize) => {
     }
   }, { sequelize });
 
+  // (async () => {
+  //   //await Book.sync();
+  //   try {
+  //     await sequelize.authenticate();
+  //   }
+  //   catch(error)
+  //   {
+      
+  //   }
+  // })
+
   return Book;
 };

@@ -4,7 +4,11 @@ block content
   body
     h1 Books
     p
-      a(class='button', href='books/new') Create New Book &#43;
+      a(class='button', href='/books/new') Create New Book &#43;
+    form(action="/books/search", method="post")
+      p
+        input(type="text" placeholder="Search")
+        input(type="submit", value="Search")
     table
       thead
         tr

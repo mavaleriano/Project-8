@@ -27,11 +27,12 @@ router.get('/new', asyncHandler(async (req, res) => {
 /* Posts a new book to the database */
 // Used 'Using Sequelize ORM with Express' teamhouse project to help with much of this
 router.post('/', asyncHandler(async (req, res) => {
+  console.log(req);
   let book;
   try {
     book = await Book.create(req.body);
-    console.log(book);
-    res.redirect("/books/" + book.id);
+    console.log(req.body);
+    res.redirect("/books");
   }
   catch(error){
     if (error.name === "SequelizeValidationError")
@@ -47,6 +48,23 @@ router.post('/', asyncHandler(async (req, res) => {
   }
 }));
 
+/* Searching for specific values */
+router.post('/search', asyncHandler(async (req, res) => {
+  //console.log(req);
+  try {
+    const books = await Book.findAll({
+        where: {
+          title: 'Emma'
+        }
+      }
+    );
+    res.render("books/index", {books: books, title: "Books"});
+  }
+  catch(error){
+    throw error;
+  }
+}));
+
 /* Shows book detail form */
 router.get('/:id', asyncHandler(async (req, res) => {
   const book = await Book.findByPk(req.params.id);
@@ -56,7 +74,7 @@ router.get('/:id', asyncHandler(async (req, res) => {
   }
   else
   {
-    res.sendStatus(404);
+    throw error;
   }
 }));
 
@@ -68,7 +86,7 @@ router.post('/:id/edit', asyncHandler(async (req, res) => {
     if (book)
     {
       await book.update(req.body);
-      res.redirect("/books/" + book.id);
+      res.redirect("/books");
     }
     else
     {

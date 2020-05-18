@@ -26,7 +26,11 @@ block content
             td=book.genre
             td=book.year
     form(action="/books", method="post")
-      input(class="link" type="submit", value="Show All", name='link')
+      input(class="link" type="submit", value="Show All", name='link', class=showAll ? "selected" : "notSelected")
       - var link = 1
         while link < links+1
-          input(class="link" type="submit", value=link++, name='link')
+          if ((link === choice) && !showAll)
+            - var show = true
+          else
+            - var show = false
+          input(class="link" type="submit", value=link++, name='link', class=show ? "selected" : "notSelected")

@@ -34,6 +34,14 @@ form input.link {
   margin-top: 30px;
 }
 
+form input.selected {
+  background: skyblue;
+}
+
+form input.notSelected {
+  border-color: black;
+}
+
 input[type=submit] {
   border: 0;
 }

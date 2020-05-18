@@ -14,9 +14,12 @@ function asyncHandler(cb){
   }
 }
 
-const booksPerPage = 6;
+const booksPerPage = 5;
+let showAll = true;
+let books;
+let subBooks;
 
-function pagination (books, link) {
+function pagination (books, link = 1) {
   let newBooksArray = [];
   let start = (link - 1) * booksPerPage;
   let end = start + booksPerPage;
@@ -34,27 +37,30 @@ function pagination (books, link) {
 
 /* Shows the full list of books*/ //the /books redirect is in index.js
 router.get('/', asyncHandler(async (req, res) => {
-  const books = await Book.findAll({ order: [['author', 'ASC']] });
+  books = await Book.findAll({ order: [['author', 'ASC']] });
   let links = (books.length / booksPerPage);
-
-  res.render("books/index", {books: books, title: "Books", links});
+  showAll = true;
+  res.render("books/index", {books: books, title: "Books", links, showAll});
 }));
 
 /* Shows the full list of books*/ //the /books redirect is in index.js
 router.post('/', asyncHandler(async (req, res) => {
-  const books = await Book.findAll({ order: [['author', 'ASC']] });
+  //const books = await Book.findAll({ order: [['author', 'ASC']] });
   let links = books.length / booksPerPage; //The reason this works is because in index.pug im iterating +1 each time so even if it's decimal it shows up correctly
-  let subBooks;
+  //let subBooks;
+  let choice = parseInt(req.body.link);
   if (req.body.link === "Show All")
   {
+    books = await Book.findAll({ order: [['author', 'ASC']] });
     subBooks = books;
+    showAll = true;
   }
   else 
   {
     subBooks = pagination(books, req.body.link);
+    showAll = false;
   }
-  
-  res.render("books/index", {books: subBooks, title: "Books", links});
+  res.render("books/index", {books: subBooks, title: "Books", links, showAll, choice});
 }));
 
 /* Shows the create new book form */
@@ -70,13 +76,11 @@ router.post('/new', asyncHandler(async (req, res) => {
   let book;
   try {
     book = await Book.create(req.body);
-    console.log(req.body);
     res.redirect("/books");
   }
   catch(error){
     if (error.name === "SequelizeValidationError")
     {
-      console.log(error.name);
       article = await Book.build(req.body);
       res.render("books/new-book", { article, errors: error.errors, title: "New Book"})
     }
@@ -92,8 +96,6 @@ router.post('/new', asyncHandler(async (req, res) => {
 // https://www.w3schools.com/sql/sql_wildcards.asp
 router.post('/search', asyncHandler(async (req, res) => {
   let home = true;
-
-
   try {
     const books = await Book.findAll({
         where: {
@@ -119,7 +121,23 @@ router.post('/search', asyncHandler(async (req, res) => {
       }
     );
     let links = books.length / booksPerPage;
-    res.render("books/index", {books: books, title: "Books", home, links});
+    let subBooks;
+    let choice = parseInt(req.body.link);
+    if (req.body.link === "Show All")
+    {
+      showAll = true;
+      subBooks = books;
+    }
+    else 
+    {
+      subBooks = pagination(books, req.body.link);
+      if (!req.body.link) // in the case there's a search and no link is clicked
+      {
+        choice = 1;
+      }
+      showAll = false;
+    }
+    res.render("books/index", {books: subBooks, title: "Books", home, links, showAll, choice});
   }
   catch(error){
     throw error;
@@ -129,19 +147,11 @@ router.post('/search', asyncHandler(async (req, res) => {
 /* Shows book detail form */
 router.get('/:id', asyncHandler(async (req, res) => {
   try{
-    console.log("Step 1: ");
     const book = await Book.findByPk(req.params.id);
-
     res.render("books/update-book", {book, title: book.title} );
   }
   catch (error) {
-    if (error.name === "TypeError")
-    {
-      res.render("books/page-not-found", {errors: error.errors})
-    }
-
-    console.log(error.status);
-    throw error;
+      res.render("page-not-found", {errors: error.errors})
   }
 }));
 

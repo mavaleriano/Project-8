@@ -28,6 +28,11 @@ form a.button, input[type=submit] {
   margin-left: 140px;
   transition: 0.4s;
 }
+form input.link {
+  margin-left: 0px;
+  margin-right: 50px;
+  margin-top: 30px;
+}
 
 input[type=submit] {
   border: 0;
@@ -94,4 +99,10 @@ input[type=text] {
 
 .errors {
   color: rgb(236, 15, 15);
+}
+
+a.home
+{
+  margin-left: 20px;
+  margin-top: -50px;
 }

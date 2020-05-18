@@ -5,9 +5,10 @@ block content
     h1 Books
     p
       a(class='button', href='/books/new') Create New Book &#43;
+      include home
     form(action="/books/search", method="post")
       p
-        input(type="text" placeholder="Search")
+        input(type="text", placeholder="Search", name='query')
         input(type="submit", value="Search")
     table
       thead
@@ -24,3 +25,8 @@ block content
             td=book.author
             td=book.genre
             td=book.year
+    form(action="/books", method="post")
+      input(class="link" type="submit", value="Show All", name='link')
+      - var link = 1
+        while link < links+1
+          input(class="link" type="submit", value=link++, name='link')

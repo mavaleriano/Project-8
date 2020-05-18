@@ -1,8 +1,9 @@
 extends layout
 
 block content
+  a(class='home', class='button', href='/books') Go Home
   - var msg = message
-  h1 Page Was #{msg}
+  h1 Result is: #{msg}
   h2= error.status
   - var n = Math.floor((Math.random() * 7) + 1)
     img.image(src=`images/404images/404img${n}.png`)

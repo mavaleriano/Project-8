@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var Book = require("../models").Book;
+const { Op } = require('../models').Sequelize;
 
 /* Handler function to wrap each route. */
 function asyncHandler(cb){
@@ -13,20 +14,58 @@ function asyncHandler(cb){
   }
 }
 
+const booksPerPage = 6;
+
+function pagination (books, link) {
+  let newBooksArray = [];
+  let start = (link - 1) * booksPerPage;
+  let end = start + booksPerPage;
+  if (end > books.length)
+  {
+    end = books.length;
+  }
+
+  for (let i = start; i < end; i = i + 1)
+  {
+    newBooksArray.push(books[i]);
+  }
+  return newBooksArray;
+}
+
 /* Shows the full list of books*/ //the /books redirect is in index.js
 router.get('/', asyncHandler(async (req, res) => {
-  const books = await Book.findAll();
-  res.render("books/index", {books: books, title: "Books"});
+  const books = await Book.findAll({ order: [['author', 'ASC']] });
+  let links = (books.length / booksPerPage);
+
+  res.render("books/index", {books: books, title: "Books", links});
+}));
+
+/* Shows the full list of books*/ //the /books redirect is in index.js
+router.post('/', asyncHandler(async (req, res) => {
+  const books = await Book.findAll({ order: [['author', 'ASC']] });
+  let links = books.length / booksPerPage; //The reason this works is because in index.pug im iterating +1 each time so even if it's decimal it shows up correctly
+  let subBooks;
+  if (req.body.link === "Show All")
+  {
+    subBooks = books;
+  }
+  else 
+  {
+    subBooks = pagination(books, req.body.link);
+  }
+  
+  res.render("books/index", {books: subBooks, title: "Books", links});
 }));
 
 /* Shows the create new book form */
 router.get('/new', asyncHandler(async (req, res) => {
-  res.render("books/new-book", { book: {}, title: "New Book" });
+  let home = true;
+  res.render("books/new-book", { book: {}, title: "New Book", home });
 }));
 
 /* Posts a new book to the database */
 // Used 'Using Sequelize ORM with Express' teamhouse project to help with much of this
-router.post('/', asyncHandler(async (req, res) => {
+router.post('/new', asyncHandler(async (req, res) => {
   console.log(req);
   let book;
   try {
@@ -49,16 +88,38 @@ router.post('/', asyncHandler(async (req, res) => {
 }));
 
 /* Searching for specific values */
+// https://sequelize.org/v4/manual/tutorial/querying.html#range-operators
+// https://www.w3schools.com/sql/sql_wildcards.asp
 router.post('/search', asyncHandler(async (req, res) => {
-  //console.log(req);
+  let home = true;
+
+
   try {
     const books = await Book.findAll({
         where: {
-          title: 'Emma'
+          [Op.or]: {
+            title: 
+            {
+              [Op.like]: `%${req.body.query}%`
+            },
+            author:
+            {
+              [Op.like]: `%${req.body.query}%`
+            },
+            genre:
+            {
+              [Op.like]: `%${req.body.query}%`
+            },
+            year:
+            {
+              [Op.like]: `%${req.body.query}%`
+            }
+          }
         }
       }
     );
-    res.render("books/index", {books: books, title: "Books"});
+    let links = books.length / booksPerPage;
+    res.render("books/index", {books: books, title: "Books", home, links});
   }
   catch(error){
     throw error;
@@ -67,13 +128,19 @@ router.post('/search', asyncHandler(async (req, res) => {
 
 /* Shows book detail form */
 router.get('/:id', asyncHandler(async (req, res) => {
-  const book = await Book.findByPk(req.params.id);
-  if (book)
-  {
+  try{
+    console.log("Step 1: ");
+    const book = await Book.findByPk(req.params.id);
+
     res.render("books/update-book", {book, title: book.title} );
   }
-  else
-  {
+  catch (error) {
+    if (error.name === "TypeError")
+    {
+      res.render("books/page-not-found", {errors: error.errors})
+    }
+
+    console.log(error.status);
     throw error;
   }
 }));

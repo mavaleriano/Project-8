@@ -11,7 +11,7 @@ block content
     pre #{error.stack}
   else
     a(class='home', class='button', href='/books') Go Home
-    - var msg = "Page was not found.. Try again or simply Go Home!"
+    - var msg = "Page for requested book was not found.. Try again or simply Go Home!"
     h1 Result is: #{msg}
     - var n = Math.floor((Math.random() * 7) + 1)
     img.image(src=`/images/404images/404img${n}.png`)

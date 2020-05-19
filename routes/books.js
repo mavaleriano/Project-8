@@ -26,7 +26,7 @@ function asyncHandler(cb){
       await cb(req, res, next)
     } catch(error)
     {
-      res.status(404).send(error);
+      next(error);
     }
   }
 }

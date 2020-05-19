@@ -35,7 +35,7 @@ form input.link {
 }
 
 form input.selected {
-  background: skyblue;
+  background: darkgreen;
 }
 
 form input.notSelected {

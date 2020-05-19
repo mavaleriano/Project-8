@@ -3,8 +3,8 @@ extends layout
 block content
   if(error)
     a(class='home', class='button', href='/books') Go Home
-    - var msg = message
-    h1 Result is: #{msg}
+    - var msg = "Error status "
+    h1 Result is: #{error.message}
     h2= error.status
     - var n = Math.floor((Math.random() * 7) + 1)
     img.image(src=`/images/404images/404img${n}.png`)

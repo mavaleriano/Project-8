@@ -6,3 +6,4 @@ Implements a dynamic website using JavaScript, Node.js, Express, Pug, and the SQ
 - Uses library.db file to access those files
 - After downloading the files, run npm install to get the appropriate dependencies
 - At the top of the file, in booksPerPage, you can choose how many pages to view with pagination
+- By default it's set to show the first page of books and you can see that with the highlighted link at the bottom

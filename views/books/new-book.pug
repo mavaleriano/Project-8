@@ -4,21 +4,21 @@ block content
   body
     h1 New Book
 
-    include errors
-
+    include errors 
+    
     form(action="/books/new", method="post")
       p
         label(for="title") Title
-        input(name="title", type="text", id="title")
+        input(name="title", type="text", id="title", value=book ? book.title : "")
       p
         label(for="author") Author
-        input(name="author", type="text", id="author")
+        input(name="author", type="text", id="author", value=book ? book.author : "")
       p
         label(for="genre") Genre
-        input(name="genre", type="text", id="genre")
+        input(name="genre", type="text", id="genre", value=book ? book.genre : "")
       p
         label(for="year") Year
-        input(name="year", type="text", id="year")
+        input(name="year", type="text", id="year", value=book ? book.year : "")
       p
         input(type="submit", value="Create New Book")
       p

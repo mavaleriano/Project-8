@@ -38,8 +38,8 @@ app.use(function(err, req, res, next) {
   res.locals.error = req.app.get('env') === 'development' ? err : {};
 
   // render the error page
-  res.status(err.status || 500 || 404 || TypeError);
-  res.render('page-not-found');
+  res.status(err.status || 500 || 404 );
+  res.render('page-not-found', {error: err});
 });
 
 module.exports = app;
